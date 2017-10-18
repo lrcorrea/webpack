@@ -1,4 +1,4 @@
-
+//https://github.com/gulpjs/gulp/blob/master/docs/recipes/fast-browserify-builds-with-watchify.md
 var pluginsDir = __dirname.replace(/\\/g, '/') + '/../node_modules/'
 
 var projectFolder = 'default-modules'
