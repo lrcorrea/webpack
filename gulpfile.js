@@ -56,6 +56,7 @@ var gulp = require('gulp'),
 gulp.task('default', function() {
   return gulp.src(config.paths.js.srcAll+'/home/assets/js/home.js')
   .pipe(plugins.webpack({
+    watch: true,
     output: {
         filename: '[name].js',
     }

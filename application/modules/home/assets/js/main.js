@@ -68,14 +68,43 @@
 /***/ (function(module, exports, __webpack_require__) {
 
 // document.write(require("./application/modules/main/main.js"));
-__webpack_require__(1);
-console.log('HOME.JS');
+/*require('./../../../main/assets/js/main.js');
+
+class Home {
+    constructor(){
+        console.log('constructor home');
+        let test = super.getWindowDom();
+        console.log(test);
+    }
+}
+
+let home = new Home();*/
+
+var app = __webpack_require__(1);
+console.log(app('test'));
 
 /***/ }),
 /* 1 */
 /***/ (function(module, exports) {
 
-console.log('MAIN.JS');
+/*class Main {
+    // window: string;
+    constructor() {
+        console.log('constructor Main');
+        this.window = window.document;
+    }
+
+    getWindowDom() {
+        console.log('getWindowDom');
+        return this.window;
+    }
+}
+
+let app = new Main();*/
+
+module.exports = function(str) {
+    return str.toUpperCase();
+};
 
 /***/ })
 /******/ ]);
