@@ -38,12 +38,19 @@ var gulp = require('gulp'),
                 srcAll:  'application/modules',
                 main:    'application/modules/main/assets/js/main.js',
                 mainDir: 'application/modules/main/assets/js',
-            }
+            },
+            pages: ['application/modules/*.html']
         }
     },
     plugins = {
         cssmin:      loadPlugin('gulp-minify-css'),
-        webpack:     loadPlugin('webpack-stream'),
+        // webpack:     loadPlugin('webpack-stream'),
+        typescript:     loadPlugin('gulp-typescript'),
+        browserify:     loadPlugin('browserify'),
+        source:     loadPlugin('vinyl-source-stream'),
+        watchify:     loadPlugin('watchify'),
+        tsify:     loadPlugin('tsify'),
+        sourcemaps:     loadPlugin('gulp-sourcemaps'),
         debug:       loadPlugin('gulp-debug'),
         gulpReplace: loadPlugin('gulp-replace'),
         less:        loadPlugin('gulp-less'),
@@ -51,9 +58,66 @@ var gulp = require('gulp'),
         rename:      loadPlugin('gulp-rename'),
         util:        loadPlugin('gulp-util')
     };
+    //tsProject = plugins.ts.createProject("tsconfig.json");
 
 
-gulp.task('default', function() {
+var watchedBrowserify = plugins.watchify(plugins.browserify({
+    basedir: '.',
+    debug: true,
+    entries: [config.paths.js.srcAll+'/main/assets/js/main.ts'],
+    cache: {},
+    packageCache: {}
+}).plugin(plugins.tsify));
+
+gulp.task("copy-html", function () {
+    return gulp.src(config.paths.pages)
+        .pipe(gulp.dest("dist"));
+});
+
+function bundle() {
+    return watchedBrowserify
+        .bundle()
+        .pipe(plugins.source('bundle.js'))
+        .pipe(gulp.dest("dist"));
+}
+
+gulp.task("default", ["copy-html"], bundle);
+watchedBrowserify.on("update", bundle);
+watchedBrowserify.on("log", plugins.util.log);
+
+
+/*gulp.task('default', function() {
+    var tsResult = gulp.src([config.paths.js.srcAll+'/*.ts'])
+        .pipe(plugins.sourcemaps.init({loadMaps: true})) // This means sourcemaps will be generated
+        .pipe(plugins.typescript({
+            noImplicitAny: true,
+            // console.log('pipe ts');
+        }));
+
+        // console.log(tsResult);
+
+    return tsResult.js
+        .pipe(plugins.sourcemaps.write(config.paths.js.srcAll)) // Now the sourcemaps are added to the .js file
+        .pipe(gulp.dest('dist'));
+});*/
+
+/*gulp.task('default', function () {
+    return gulp.src(config.paths.js.srcAll)
+        .pipe(ts({
+            noImplicitAny: true,
+            outFile: 'main.js'
+        }))
+        .pipe(gulp.dest('built/local'));
+});*/
+
+// gulp.task("default", function () {
+//     return tsProject.src()
+//         .pipe(tsProject())
+//         .js.pipe(gulp.dest("dist"));
+// });
+
+//webpack
+/*gulp.task('default', function() {
   return gulp.src(config.paths.js.srcAll+'/home/assets/js/home.js')
   .pipe(plugins.webpack({
     watch: true,
@@ -62,10 +126,9 @@ gulp.task('default', function() {
     }
     }, null, function(err, stats) {
         // console.log(err, stats);
-      /* Use stats to do more things if needed */
     }))
     .pipe(gulp.dest(config.paths.js.srcAll+'/home/assets/js'));
-});
+});*/
 
 gulp.task('add', function() {
     if(argv.module) {
